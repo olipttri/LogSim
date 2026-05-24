@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eggonomy — Supply Chain Simulation</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+
+    <!-- TOAST NOTIFICATIONS -->
+    <div id="toast-container"></div>
+
+    <!-- ═══ SPLASH ═══ -->
+    <div id="screen-splash" class="screen active">
+      <div class="splash-bg">
+        <div class="egg-float egg1">🥚</div>
+        <div class="egg-float egg2">🐣</div>
+        <div class="egg-float egg3">🐔</div>
+        <div class="egg-float egg4">🥚</div>
+        <div class="egg-float egg5">🐔</div>
+      </div>
+      <div class="splash-content">
+        <div class="logo-mark">🥚</div>
+        <h1 class="game-title">EGGONOMY</h1>
+        <p class="game-subtitle">A Supply Chain Simulation</p>
+        <p class="game-tagline">Which came first — the chicken or the profit?</p>
+        <div class="splash-buttons">
+          <button type="button" class="btn-primary" id="btn-start-splash">START GAME</button>
+          <button type="button" class="btn-ghost" id="btn-htp">HOW TO PLAY</button>
+          <button type="button" class="btn-ghost" id="btn-continue" style="display:none;">▶ CONTINUE GAME</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ HOW TO PLAY ═══ -->
+    <div id="screen-howtoplay" class="screen">
+      <div class="screen-inner">
+        <h2 class="screen-title">HOW TO PLAY</h2>
+        <div class="htp-grid">
+          <div class="htp-card">
+            <div class="htp-icon">📦</div>
+            <h3>1. SOURCE</h3>
+            <p>Each round, decide how many eggs to buy from suppliers. Balance cost, speed, and risk.</p>
+          </div>
+          <div class="htp-card">
+            <div class="htp-icon">🏭</div>
+            <h3>2. PRODUCE</h3>
+            <p>Hatch eggs into chickens or sell them directly. Chickens produce eggs or meat over time.</p>
+          </div>
+          <div class="htp-card">
+            <div class="htp-icon">🧊</div>
+            <h3>3. STORE</h3>
+            <p>Manage your inventory carefully. Eggs spoil after a few rounds. Overstock wastes money.</p>
+          </div>
+          <div class="htp-card">
+            <div class="htp-icon">🚚</div>
+            <h3>4. DISTRIBUTE</h3>
+            <p>Choose fast or slow delivery. Local or global sourcing. Each has cost/risk tradeoffs.</p>
+          </div>
+          <div class="htp-card">
+            <div class="htp-icon">👥</div>
+            <h3>5. SATISFY</h3>
+            <p>Meet customer demand each round. Satisfaction drives your final score and reputation.</p>
+          </div>
+          <div class="htp-card htp-win">
+            <div class="htp-icon">🏆</div>
+            <h3>WIN CONDITION</h3>
+            <p>Complete <strong>10 rounds</strong> with a final score of <strong>≥ 2000 points</strong> and
+              customer satisfaction <strong>≥ 60%</strong>.</p>
+          </div>
+        </div>
+        <div style="text-align:center">
+          <button type="button" class="btn-primary" id="btn-back-htp">← BACK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ DIFFICULTY ═══ -->
+    <div id="screen-menu" class="screen">
+      <div class="screen-inner">
+        <h2 class="screen-title">SELECT DIFFICULTY</h2>
+        <div class="diff-cards">
+          <div id="btn-diff-easy" class="diff-card">
+            <div class="diff-icon">🐣</div>
+            <h3>EASY</h3>
+            <p>Starting Capital: $500<br>Demand Variance: Low<br>Spoilage: Slow (4 rounds)</p>
+            <span class="diff-tag">Beginner</span>
+          </div>
+          <div id="btn-diff-normal" class="diff-card featured">
+            <div class="diff-icon">🐔</div>
+            <h3>NORMAL</h3>
+            <p>Starting Capital: $350<br>Demand Variance: Medium<br>Spoilage: Standard (3 rounds)</p>
+            <span class="diff-tag">Recommended</span>
+          </div>
+          <div id="btn-diff-hard" class="diff-card">
+            <div class="diff-icon">🍳</div>
+            <h3>HARD</h3>
+            <p>Starting Capital: $200<br>Demand Variance: High<br>Spoilage: Fast (2 rounds)</p>
+            <span class="diff-tag">Expert</span>
+          </div>
+        </div>
+        <div style="text-align:center">
+          <button type="button" class="btn-ghost" id="btn-back-menu">← BACK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MAIN GAME ═══ -->
+    <div id="screen-game" class="screen">
+
+      <!-- TOP BAR -->
+      <div class="topbar">
+        <div class="topbar-brand">🥚 EGGONOMY</div>
+        <div class="topbar-stats">
+          <div class="stat-pill" id="hud-round">Round 1/10</div>
+          <div class="stat-pill money" id="hud-money">$350</div>
+          <div class="stat-pill satisfaction" id="hud-sat">😊 100%</div>
+          <div class="stat-pill score" id="hud-score">Score: 0</div>
+        </div>
+        <button type="button" class="btn-mini" id="btn-help-game">?</button>
+      </div>
+
+      <div class="game-layout">
+
+        <!-- LEFT: INVENTORY -->
+        <div class="panel panel-inventory">
+          <h3 class="panel-title">📦 INVENTORY</h3>
+          <div class="inv-grid">
+            <div class="inv-item">
+              <span class="inv-icon">🥚</span>
+              <div class="inv-info">
+                <span class="inv-name">Eggs</span>
+                <span class="inv-val" id="inv-eggs">0</span>
+              </div>
+              <div class="inv-freshness" id="inv-eggs-fresh"></div>
+            </div>
+            <div class="inv-item">
+              <span class="inv-icon">🐔</span>
+              <div class="inv-info">
+                <span class="inv-name">Chickens</span>
+                <span class="inv-val" id="inv-chickens">0</span>
+              </div>
+            </div>
+            <div class="inv-item">
+              <span class="inv-icon">🥩</span>
+              <div class="inv-info">
+                <span class="inv-name">Meat</span>
+                <span class="inv-val" id="inv-meat">0</span>
+              </div>
+            </div>
+            <div class="inv-item">
+              <span class="inv-icon">📦</span>
+              <div class="inv-info">
+                <span class="inv-name">Cartons</span>
+                <span class="inv-val" id="inv-packed">0</span>
+              </div>
+            </div>
+          </div>
+          <div class="capacity-bar-wrap">
+            <div class="cap-label">Warehouse Capacity</div>
+            <div class="capacity-bar"><div class="cap-fill" id="cap-fill"></div></div>
+            <div class="cap-val" id="cap-val">0 / 100</div>
+          </div>
+          <div id="pending-orders-panel" class="pending-orders"></div>
+        </div>
+
+        <!-- CENTER: PHASES -->
+        <div class="panel panel-main">
+          <div class="phase-indicator">
+            <span class="phase-step active" data-phase="source">1 SOURCE</span>
+            <span class="phase-arrow">→</span>
+            <span class="phase-step" data-phase="produce">2 PRODUCE</span>
+            <span class="phase-arrow">→</span>
+            <span class="phase-step" data-phase="distribute">3 DISTRIBUTE</span>
+            <span class="phase-arrow">→</span>
+            <span class="phase-step" data-phase="result">4 RESULT</span>
+          </div>
+
+          <!-- PHASE 1: SOURCE -->
+          <div id="phase-source" class="phase-panel active">
+            <h3 class="phase-title">📦 SOURCING PHASE</h3>
+            <p class="phase-desc">Choose your egg supply strategy for this round.</p>
+            <div class="demand-hint" id="demand-hint">Loading demand forecast...</div>
+            <div class="source-options" id="source-options"></div>
+            <div class="action-row">
+              <label class="input-label">Quantity to order: <span id="order-qty-display">0</span></label>
+              <input type="range" id="order-qty" min="0" max="30" value="0" />
+              <div class="order-cost" id="order-cost-preview">No order placed</div>
+            </div>
+            <button type="button" id="btn-confirm-source" class="btn-primary btn-phase">CONFIRM ORDER →</button>
+          </div>
+
+          <!-- PHASE 2: PRODUCE -->
+          <div id="phase-produce" class="phase-panel">
+            <h3 class="phase-title">🏭 PRODUCTION PHASE</h3>
+            <p class="phase-desc">Decide what to do with your eggs and chickens.</p>
+            <div class="produce-options">
+              <div class="produce-card">
+                <h4>🥚 Sell Eggs Directly</h4>
+                <p>Sell eggs for <strong>$2.50/egg</strong>. Fast cash, no risk.</p>
+                <div class="prod-qty-row">
+                  <label>Qty: <span id="sell-eggs-display">0</span></label>
+                  <input type="range" id="sell-eggs-qty" min="0" max="0" value="0" />
+                </div>
+              </div>
+              <div class="produce-card">
+                <h4>🐣 Hatch into Chickens</h4>
+                <p>Takes 1 round. Chickens produce <strong>3 eggs/round</strong> or can be sold as meat.</p>
+                <div class="prod-qty-row">
+                  <label>Qty: <span id="hatch-eggs-display">0</span></label>
+                  <input type="range" id="hatch-eggs-qty" min="0" max="0" value="0" />
+                </div>
+              </div>
+              <div class="produce-card">
+                <h4>📦 Pack into Cartons</h4>
+                <p>Pack 6 eggs per carton. Sells for <strong>$18/carton</strong> (vs $15 loose).</p>
+                <div class="prod-qty-row">
+                  <label>Eggs to pack: <span id="pack-eggs-display">0</span></label>
+                  <input type="range" id="pack-eggs-qty" min="0" max="0" value="0" />
+                </div>
+              </div>
+              <div class="produce-card">
+                <h4>🍗 Process Chickens (Meat)</h4>
+                <p>Convert chickens to meat. Sells for <strong>$8/unit</strong>. Reduces egg production.</p>
+                <div class="prod-qty-row">
+                  <label>Qty: <span id="slaughter-display">0</span></label>
+                  <input type="range" id="slaughter-qty" min="0" max="0" value="0" />
+                </div>
+              </div>
+            </div>
+            <div class="produce-summary" id="produce-summary">Adjust sliders to plan production.</div>
+            <button type="button" id="btn-confirm-produce" class="btn-primary btn-phase">CONFIRM PRODUCTION →</button>
+          </div>
+
+          <!-- PHASE 3: DISTRIBUTE -->
+          <div id="phase-distribute" class="phase-panel">
+            <h3 class="phase-title">🚚 DISTRIBUTION PHASE</h3>
+            <p class="phase-desc">Choose how to deliver your products to customers.</p>
+            <div class="dist-section">
+              <h4>Delivery Speed</h4>
+              <div class="radio-cards">
+                <label class="radio-card">
+                  <input type="radio" name="delivery" value="fast" />
+                  <div class="rc-body">
+                    <div class="rc-icon">✈️</div>
+                    <div class="rc-name">Fast Delivery</div>
+                    <div class="rc-desc">Cost: $0.50/unit<br>Satisfaction: +10%<br>Demand met: 100%</div>
+                  </div>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="delivery" value="standard" checked />
+                  <div class="rc-body">
+                    <div class="rc-icon">🚛</div>
+                    <div class="rc-name">Standard</div>
+                    <div class="rc-desc">Cost: $0.20/unit<br>Satisfaction: ±0%<br>Demand met: 90%</div>
+                  </div>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="delivery" value="slow" />
+                  <div class="rc-body">
+                    <div class="rc-icon">🐢</div>
+                    <div class="rc-name">Slow Delivery</div>
+                    <div class="rc-desc">Cost: $0.05/unit<br>Satisfaction: -15%<br>Demand met: 70%</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="dist-section">
+              <h4>Sourcing Route (preference for next round)</h4>
+              <div class="radio-cards">
+                <label class="radio-card">
+                  <input type="radio" name="route" value="local" checked />
+                  <div class="rc-body">
+                    <div class="rc-icon">🏘️</div>
+                    <div class="rc-name">Local</div>
+                    <div class="rc-desc">+0 delay<br>Max: 30 eggs<br>Standard price</div>
+                  </div>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="route" value="regional" />
+                  <div class="rc-body">
+                    <div class="rc-icon">🗺️</div>
+                    <div class="rc-name">Regional</div>
+                    <div class="rc-desc">+1 round delay<br>Max: 60 eggs<br>Price: -10%</div>
+                  </div>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="route" value="global" />
+                  <div class="rc-body">
+                    <div class="rc-icon">🌐</div>
+                    <div class="rc-name">Global</div>
+                    <div class="rc-desc">+2 round delay<br>Unlimited<br>-25%, risk: delay</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="dist-summary" id="dist-summary">Select delivery and route options above.</div>
+            <button type="button" id="btn-confirm-distribute" class="btn-primary btn-phase">DELIVER & END ROUND →</button>
+          </div>
+
+          <!-- PHASE 4: RESULT -->
+          <div id="phase-result" class="phase-panel">
+            <h3 class="phase-title">📊 ROUND RESULTS</h3>
+            <div id="result-content"></div>
+            <button type="button" id="btn-next-round" class="btn-primary btn-phase">NEXT ROUND →</button>
+          </div>
+        </div>
+
+        <!-- RIGHT: MARKET & LOG -->
+        <div class="panel panel-right">
+          <div class="market-panel">
+            <h3 class="panel-title">📈 MARKET</h3>
+            <div id="market-demand"></div>
+            <div class="price-table">
+              <div class="price-row"><span>🥚 Eggs</span><span id="price-eggs">$2.50</span></div>
+              <div class="price-row"><span>📦 Cartons</span><span id="price-cartons">$18.00</span></div>
+              <div class="price-row"><span>🥩 Meat</span><span id="price-meat">$8.00</span></div>
+            </div>
+          </div>
+          <div class="log-panel">
+            <h3 class="panel-title">📋 EVENT LOG</h3>
+            <div id="event-log" class="event-log"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ WIN SCREEN ═══ -->
+    <div id="screen-win" class="screen">
+      <div class="endscreen win">
+        <div class="end-icon">🏆</div>
+        <h2>CONGRATULATIONS!</h2>
+        <p class="end-subtitle">You mastered the Eggonomy!</p>
+        <div id="win-stats" class="end-stats"></div>
+        <button type="button" class="btn-primary" id="btn-win-again">PLAY AGAIN</button>
+      </div>
+    </div>
+
+    <!-- ═══ LOSE SCREEN ═══ -->
+    <div id="screen-lose" class="screen">
+      <div class="endscreen lose">
+        <div class="end-icon">🍳</div>
+        <h2>GAME OVER</h2>
+        <p class="end-subtitle" id="lose-reason">The supply chain broke down.</p>
+        <div id="lose-stats" class="end-stats"></div>
+        <button type="button" class="btn-primary" id="btn-lose-again">TRY AGAIN</button>
+      </div>
+    </div>
+
+  </div><!-- /#app -->
+
+  <script src="js/game.js"></script>
+</body>
+</html>
