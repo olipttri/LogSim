@@ -306,6 +306,12 @@ function startGame(difficulty, isLoad = false) {
 
   Storage.clear();
   state = getInitialState(difficulty);
+
+  if (window._pendingPlayerName) {
+  state.playerName = window._pendingPlayerName;
+  window._pendingPlayerName = null;
+  }
+
   showScreen('screen-game');
   renderAll();
   addLog(`━━━ ROUND 1 ━━━`, 'round');
@@ -848,6 +854,89 @@ function renderAll() {
 }
 
 // ─────────────────────────────────────────────
+//  STORY SCREEN
+// ─────────────────────────────────────────────
+function typeWriter(el, text, onDone) {
+  if (!el) { if (onDone) onDone(); return; }
+  el.textContent = '';
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.style.cssText = 'color:var(--yolk);animation:none;';
+  cursor.textContent = '▌';
+  el.appendChild(cursor);
+  const tick = setInterval(() => {
+    if (i < text.length) {
+      el.insertBefore(document.createTextNode(text[i]), cursor);
+      i++;
+    } else {
+      clearInterval(tick);
+      cursor.remove();
+      if (onDone) onDone();
+    }
+  }, 28);
+}
+
+function typeSequence(lines, onAllDone) {
+  let idx = 0;
+  function next() {
+    if (idx >= lines.length) { if (onAllDone) onAllDone(); return; }
+    const { id, text, color, pause = 0 } = lines[idx++];
+    const el = document.getElementById(id);
+    if (color && el) el.style.color = color;
+    setTimeout(() => typeWriter(el, text, () => setTimeout(next, 300)), pause);
+  }
+  next();
+}
+
+function showStoryStep(n) {
+  document.querySelectorAll('.story-step').forEach(el => el.style.display = 'none');
+  const step = document.getElementById('story-step-' + n);
+  if (step) step.style.display = 'block';
+
+  if (n === 1) {
+    typeSequence([
+      { id: 'sl-1-1', text: '[EGGONOMY_OS]: Booting ethical subroutines...', color: 'var(--text-muted)' },
+      { id: 'sl-1-2', text: '[EGGONOMY_OS]: Loading philosophical database...', color: 'var(--text-muted)', pause: 200 },
+      { id: 'sl-1-3', text: '[DATABASE]: ERROR — "Which came first?" query timed out after 4,000 years.', color: 'var(--red)', pause: 300 },
+      { id: 'sl-1-4', text: '[SYSTEM]: Defaulting to only known answer: PROFIT. Welcome.', color: 'var(--green)', pause: 400 },
+    ], () => {
+      setTimeout(() => {
+        const btn = document.getElementById('btn-story-1');
+        if (btn) btn.style.display = 'inline-block';
+      }, 400);
+    });
+  }
+  if (n === 3) {
+    typeSequence([
+      { id: 'sl-3-1', text: '> TRANSMISSION FROM: The Eggonomy Corp Board', color: 'var(--yolk)' },
+      { id: 'sl-3-2', text: '> We heard you\'re not afraid of chickens, chaos, or cold storage.', color: 'var(--text)', pause: 300 },
+      { id: 'sl-3-3', text: '> The job: 10 rounds. Buy eggs. Hatch things. Sell everything. Don\'t ask questions.', color: 'var(--text)', pause: 300 },
+      { id: 'sl-3-4', text: '> Heads up: Bird flu, foxes, and market crashes are on the menu. Ernest wasn\'t ready. Be ready.', color: 'var(--orange)', pause: 300 },
+      { id: 'sl-3-5', text: '> Hit 2,000 pts and 60% satisfaction to prove humanity made the right call hiring you over a chicken.', color: 'var(--blue)', pause: 400 },
+          ], () => {
+      setTimeout(() => {
+        const btn = document.getElementById('btn-story-3');
+        if (btn) btn.style.display = 'inline-block';
+      }, 400);
+    });
+  }
+}
+
+function initStoryScreen() {
+  document.querySelectorAll('.story-step').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.story-line').forEach(el => el.textContent = '');
+  const nameInput = document.getElementById('input-player-name');
+  if (nameInput) nameInput.value = '';
+  const b1 = document.getElementById('btn-story-1');
+  const b2 = document.getElementById('btn-story-2');
+  const b3 = document.getElementById('btn-story-3');
+  if (b1) { b1.style.display = 'none'; b1.onclick = () => showStoryStep(2); }
+  if (b2) { b2.onclick = () => showStoryStep(3); }
+  if (b3) { b3.style.display = 'none'; b3.onclick = () => showStoryStep(4); }
+  showStoryStep(1);
+}
+
+// ─────────────────────────────────────────────
 //  INITIALIZATION
 // ─────────────────────────────────────────────
 window.Game = {
@@ -879,7 +968,7 @@ function initButtons() {
   };
 
   // Splash
-  bind('btn-start-splash', () => showScreen('screen-menu'));
+  bind('btn-start-splash', () => { initStoryScreen(); showScreen('screen-story'); });
   bind('btn-htp', () => showScreen('screen-howtoplay'));
   bind('btn-continue', () => startGame(null, true));
 
@@ -898,7 +987,7 @@ function initButtons() {
     updateHTPButtons();
     showScreen('screen-menu');
   });
-  bind('btn-back-menu', () => showScreen('screen-splash'));
+  bind('btn-back-menu', () => showScreen('screen-story'));
 
   // Difficulty
   bind('btn-diff-easy', () => startGame('easy'));
@@ -967,6 +1056,14 @@ const invPanel = document.querySelector('.panel-inventory') || document.getEleme
     `;
     invPanel.appendChild(wcSection);
   }
+
+  // Story screen buttons + name confirm
+  bind('btn-confirm-story', () => {
+    const nameInput = document.getElementById('input-player-name');
+    window._pendingPlayerName = (nameInput && nameInput.value.trim()) || 'Anonymous Tycoon';
+    showToast(`Contract signed, Chief ${window._pendingPlayerName}!`, 'success');
+    showScreen('screen-menu');
+  });
 
   console.log('✅ Eggonomy: All buttons initialized.');
 }

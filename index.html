@@ -79,6 +79,85 @@
       </div>
     </div>
 
+    <!-- ═══ STORY ═══ -->
+    <div id="screen-story" class="screen">
+      <div style="max-width:560px; width:90%; margin:0 auto; padding:30px 0;">
+
+        <!-- STEP 1: Terminal boot -->
+        <div class="story-step" id="story-step-1">
+          <div class="story-terminal">
+            <div class="story-terminal-bar">
+              <span class="t-dot t-red"></span><span class="t-dot t-yellow"></span><span class="t-dot t-green"></span>
+              <span style="margin-left:8px;font-size:0.7rem;color:var(--text-muted)">EGGONOMY_OS v4.2.0</span>
+            </div>
+            <div class="story-terminal-body">
+              <p class="story-line" id="sl-1-1"></p>
+              <p class="story-line" id="sl-1-2"></p>
+              <p class="story-line" id="sl-1-3"></p>
+              <p class="story-line" id="sl-1-4"></p>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:20px;">
+            <button type="button" class="btn-primary" id="btn-story-1" style="display:none;">CONTINUE →</button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Newspaper -->
+        <div class="story-step" id="story-step-2" style="display:none;">
+          <div class="story-card">
+            <div class="story-badge">📰 BREAKING NEWS — LOCAL GAZETTE</div>
+            <h2 class="story-headline">LOCAL BARN FALLS INTO BANKRUPTCY AFTER OWNER SPENT $40K ON PHILOSOPHY DEGREE TO ANSWER "THE BIG QUESTION"</h2>
+            <p class="story-body-text">Ernest J. Clucksworth, 54, former egg farmer turned amateur philosopher, spent his life savings attempting to answer which came first — the chicken or the egg. His barn, <strong>Eggonomy Corp</strong>, now sits empty. His 12 chickens have unionized.</p>
+            <p class="story-body-text" style="margin-top:10px;color:var(--yolk);">The Board of Directors is looking for a replacement CEO. Someone rational. Someone profit-oriented. Someone who just wants to <em>move product</em>.</p>
+          </div>
+          <div style="text-align:center;margin-top:20px;">
+            <button type="button" class="btn-primary" id="btn-story-2">THAT SOUNDS LIKE ME →</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Board transmission -->
+        <div class="story-step" id="story-step-3" style="display:none;">
+          <div class="story-terminal">
+            <div class="story-terminal-bar">
+              <span class="t-dot t-red"></span><span class="t-dot t-yellow"></span><span class="t-dot t-green"></span>
+              <span style="margin-left:8px;font-size:0.7rem;color:var(--text-muted)">INCOMING_TRANSMISSION.exe</span>
+            </div>
+            <div class="story-terminal-body">
+              <p class="story-line" id="sl-3-1"></p>
+              <p class="story-line" id="sl-3-2"></p>
+              <p class="story-line" id="sl-3-3"></p>
+              <p class="story-line" id="sl-3-4"></p>
+              <p class="story-line" id="sl-3-5"></p>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:20px;">
+            <button type="button" class="btn-primary" id="btn-story-3" style="display:none;">I ACCEPT THE MISSION →</button>
+          </div>
+        </div>
+
+        <!-- STEP 4: Contract + name -->
+        <div class="story-step" id="story-step-4" style="display:none;">
+          <div class="story-card" style="border-color:var(--yolk);">
+            <div class="story-badge" style="background:var(--yolk);color:#0f0e0a;">📋 OFFICIAL TRADE CONTRACT — EGGONOMY CORP</div>
+            <p style="font-family:var(--font-mono);font-size:0.82rem;line-height:1.6;color:var(--text-muted);margin:12px 0;">
+              I, the undersigned, hereby agree to manage Eggonomy Corp's egg supply chain across <strong style="color:var(--text)">10 brutal rounds</strong>. I will source eggs, hatch chickens, manage spoilage, and satisfy customer demand — all without once asking the chicken-egg question.<br><br>
+              I understand the answer is irrelevant. <span style="color:var(--green)">Profit is the answer.</span>
+            </p>
+            <div style="border-top:1px solid var(--border);padding-top:14px;">
+              <label style="display:block;font-family:var(--font-display);font-weight:700;font-size:0.8rem;margin-bottom:8px;color:var(--yolk);letter-spacing:.05em;">CHIEF EXECUTIVE NAME (OPTIONAL):</label>
+              <input type="text" id="input-player-name" placeholder="Anonymous Tycoon" maxlength="20"
+                    style="width:100%;padding:10px 12px;background:var(--surface3);border:2px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font-mono);font-size:0.9rem;outline:none;transition:border .2s;"
+                    onfocus="this.style.borderColor='var(--yolk)'" onblur="this.style.borderColor='var(--border)'">
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:20px;">
+            <button type="button" class="btn-primary" id="btn-confirm-story" style="width:100%;padding:14px;">✍️ SIGN CONTRACT & CHOOSE DIFFICULTY</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- ═══ DIFFICULTY ═══ -->
     <div id="screen-menu" class="screen">
       <div class="screen-inner">
